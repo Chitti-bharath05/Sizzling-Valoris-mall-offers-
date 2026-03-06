@@ -20,7 +20,7 @@ const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.44;
 
 export default function HomeScreen({ navigation }) {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { offers, categories, isLoading, getActiveOffers, getStoreById } = useData();
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
@@ -132,13 +132,13 @@ export default function HomeScreen({ navigation }) {
                         {store?.storeName || 'Store'}
                     </Text>
                     <View style={styles.priceRow}>
-                        <Text style={styles.discountedPrice}>₹{discountedPrice.toLocaleString()}</Text>
-                        <Text style={styles.originalPrice}>₹{item.originalPrice.toLocaleString()}</Text>
+                        <Text style={styles.discountedPrice}>₹{(discountedPrice || 0).toLocaleString()}</Text>
+                        <Text style={styles.originalPrice}>₹{(item?.originalPrice || 0).toLocaleString()}</Text>
                     </View>
                     <View style={styles.expiryRow}>
                         <Ionicons name="time-outline" size={12} color="#8E8E93" />
                         <Text style={styles.expiryText}>
-                            Expires: {new Date(item.expiryDate).toLocaleDateString()}
+                            Expires: {item?.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}
                         </Text>
                     </View>
                 </View>
@@ -206,7 +206,7 @@ export default function HomeScreen({ navigation }) {
                     style={styles.categoriesContainer}
                     contentContainerStyle={styles.categoriesContent}
                 >
-                    {CATEGORIES.map((cat) => (
+                    {(categories || []).map((cat) => (
                         <TouchableOpacity
                             key={cat}
                             style={[

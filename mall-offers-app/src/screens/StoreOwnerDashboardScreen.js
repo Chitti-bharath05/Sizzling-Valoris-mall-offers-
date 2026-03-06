@@ -7,7 +7,7 @@ import { useData } from '../context/DataContext';
 
 const StoreOwnerDashboardScreen = () => {
     const { user, logout } = useAuth();
-    const { getStoresByOwner, getOffersByStore, addOffer, updateOffer, deleteOffer, registerStore, categories } = useData();
+    const { getStoresByOwner, getOffersByStore, addOffer, updateOffer, deleteOffer, registerStore, categories, isLoading } = useData();
     const [activeTab, setActiveTab] = useState('offers');
     const [showAddOffer, setShowAddOffer] = useState(false);
     const [showAddStore, setShowAddStore] = useState(false);
@@ -33,8 +33,10 @@ const StoreOwnerDashboardScreen = () => {
     }
 
     const myStores = getStoresByOwner(user.id) || [];
-    const approvedStores = myStores.filter(s => s.approved);
-    const allMyOffers = myStores.flatMap(store => getOffersByStore(store.id).map(o => ({ ...o, storeName: store.storeName })));
+    const approvedStores = myStores.filter(s => s && s.approved);
+    const allMyOffers = myStores.flatMap(store =>
+        (getOffersByStore(store.id) || []).map(o => ({ ...o, storeName: store.storeName }))
+    );
 
     const resetForm = () => { setOfferTitle(''); setOfferDesc(''); setOfferDiscount(''); setOfferPrice(''); setOfferExpiry(''); setOfferCategory('Fashion'); setOfferIsOnline(false); setEditingOffer(null); };
 

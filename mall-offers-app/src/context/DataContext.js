@@ -35,24 +35,47 @@ export const DataProvider = ({ children }) => {
         queryFn: () => apiClient.get('/categories'),
     });
 
-    // Mocking orders for now as they are usually user-specific and dynamic
-    const [orders, setOrders] = useState([]);
+    const {
+        data: orders = [],
+        isLoading: isLoadingOrders,
+        refetch: refetchOrders
+    } = useQuery({
+        queryKey: ['orders'],
+        queryFn: () => {
+            // we'll fetch orders based on user id later or fetch all if admin
+            return [];
+        },
+    });
 
     // ---- Store operations ----
     const registerStore = async (storeName, ownerId, location, category) => {
-        // In a real app, this would be an API call
-        console.log('Registering store:', { storeName, ownerId, location, category });
-        refetchStores();
+        try {
+            await apiClient.post('/stores', { storeName, ownerId, location, category });
+            refetchStores();
+        } catch (e) {
+            console.error('Error registering store:', e);
+            throw e;
+        }
     };
 
     const approveStore = async (storeId) => {
-        // API call to approve
-        refetchStores();
+        try {
+            await apiClient.put(`/stores/${storeId}/approve`);
+            refetchStores();
+        } catch (e) {
+            console.error('Error approving store:', e);
+            throw e;
+        }
     };
 
     const rejectStore = async (storeId) => {
-        // API call to reject
-        refetchStores();
+        try {
+            await apiClient.put(`/stores/${storeId}/reject`);
+            refetchStores();
+        } catch (e) {
+            console.error('Error rejecting store:', e);
+            throw e;
+        }
     };
 
     const getStoresByOwner = (ownerId) => {
@@ -73,18 +96,33 @@ export const DataProvider = ({ children }) => {
 
     // ---- Offer operations ----
     const addOffer = async (offerData) => {
-        // API call to add
-        refetchOffers();
+        try {
+            await apiClient.post('/offers', offerData);
+            refetchOffers();
+        } catch (e) {
+            console.error('Error adding offer:', e);
+            throw e;
+        }
     };
 
     const updateOffer = async (offerId, updates) => {
-        // API call to update
-        refetchOffers();
+        try {
+            await apiClient.put(`/offers/${offerId}`, updates);
+            refetchOffers();
+        } catch (e) {
+            console.error('Error updating offer:', e);
+            throw e;
+        }
     };
 
     const deleteOffer = async (offerId) => {
-        // API call to delete
-        refetchOffers();
+        try {
+            await apiClient.delete(`/offers/${offerId}`);
+            refetchOffers();
+        } catch (e) {
+            console.error('Error deleting offer:', e);
+            throw e;
+        }
     };
 
     const getOffersByStore = (storeId) => {
@@ -104,17 +142,15 @@ export const DataProvider = ({ children }) => {
     };
 
     // ---- Order operations ----
-    const placeOrder = (userId, items, totalAmount) => {
-        const newOrder = {
-            id: 'ord' + Date.now(),
-            userId,
-            items,
-            totalAmount,
-            paymentStatus: 'completed',
-            orderDate: new Date().toISOString().split('T')[0],
-        };
-        setOrders((prev) => [...prev, newOrder]);
-        return newOrder;
+    const placeOrder = async (userId, items, totalAmount) => {
+        try {
+            const res = await apiClient.post('/orders', { userId, items, totalAmount });
+            refetchOrders();
+            return res.order;
+        } catch (e) {
+            console.error('Error placing order:', e);
+            throw e;
+        }
     };
 
     const getOrdersByUser = (userId) => {
@@ -128,7 +164,7 @@ export const DataProvider = ({ children }) => {
                 offers,
                 categories,
                 orders,
-                isLoading: isLoadingStores || isLoadingOffers || isLoadingCategories,
+                isLoading: isLoadingStores || isLoadingOffers || isLoadingCategories || isLoadingOrders,
                 registerStore,
                 approveStore,
                 rejectStore,

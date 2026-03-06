@@ -77,12 +77,12 @@ const CartScreen = ({ navigation }) => {
                         {item.title}
                     </Text>
                     <View style={styles.itemPriceRow}>
-                        <Text style={styles.itemPrice}>₹{item.price.toLocaleString()}</Text>
+                        <Text style={styles.itemPrice}>₹{(item.price || 0).toLocaleString()}</Text>
                         <Text style={styles.itemOriginalPrice}>
-                            ₹{item.originalPrice.toLocaleString()}
+                            ₹{(item.originalPrice || 0).toLocaleString()}
                         </Text>
                         <View style={styles.itemDiscountBadge}>
-                            <Text style={styles.itemDiscountText}>{item.discount}% off</Text>
+                            <Text style={styles.itemDiscountText}>{item.discount || 0}% off</Text>
                         </View>
                     </View>
                 </View>
@@ -96,7 +96,7 @@ const CartScreen = ({ navigation }) => {
                     >
                         <Ionicons name="remove" size={16} color="#FF6B6B" />
                     </TouchableOpacity>
-                    <Text style={styles.quantityText}>{item.quantity}</Text>
+                    <Text style={styles.quantityText}>{item.quantity || 1}</Text>
                     <TouchableOpacity
                         style={styles.quantityBtn}
                         onPress={() => updateQuantity(item.offerId, item.quantity + 1)}
@@ -105,7 +105,7 @@ const CartScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.itemSubtotal}>
-                    ₹{(item.price * item.quantity).toLocaleString()}
+                    ₹{((item.price || 0) * (item.quantity || 1)).toLocaleString()}
                 </Text>
                 <TouchableOpacity
                     onPress={() => removeFromCart(item.offerId)}

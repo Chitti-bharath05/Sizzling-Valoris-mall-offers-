@@ -25,6 +25,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/offers', require('./routes/offers'));
 app.use('/api/stores', require('./routes/stores'));
+app.use('/api/orders', require('./routes/orders'));
 
 app.get('/api/categories', (req, res) => {
     const { CATEGORIES } = require('./data/mockData');

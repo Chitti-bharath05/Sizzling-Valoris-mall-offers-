@@ -1,6 +1,6 @@
 // Mock Data for Mall & Online Offers Aggregator (Server Side)
 
-const USERS = [
+let USERS = [
     {
         id: 'u1',
         name: 'John Customer',
@@ -31,7 +31,7 @@ const USERS = [
     },
 ];
 
-const STORES = [
+let STORES = [
     {
         id: 's1',
         storeName: 'Fashion Hub',
@@ -58,7 +58,7 @@ const STORES = [
     },
 ];
 
-const OFFERS = [
+let OFFERS = [
     {
         id: 'o1',
         title: 'Summer Fashion Sale',
@@ -157,7 +157,7 @@ const OFFERS = [
     },
 ];
 
-const CATEGORIES = [
+let CATEGORIES = [
     'All',
     'Fashion',
     'Electronics',
@@ -167,9 +167,12 @@ const CATEGORIES = [
     'Home',
 ];
 
+let ORDERS = [];
+
 module.exports = {
     USERS,
     STORES,
     OFFERS,
-    CATEGORIES
+    CATEGORIES,
+    ORDERS
 };

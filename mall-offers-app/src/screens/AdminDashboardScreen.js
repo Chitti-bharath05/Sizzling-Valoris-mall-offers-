@@ -91,7 +91,7 @@ const AdminDashboardScreen = () => {
                 </View>
                 {/* Stats */}
                 <View style={s.statsRow}>
-                    {[{ v: users.length, l: 'Users', c: '#4ECDC4' }, { v: stores.length, l: 'Stores', c: '#FF8E53' }, { v: offers.length, l: 'Offers', c: '#A18CD1' }, { v: pendingStores.length, l: 'Pending', c: '#FF6B6B' }].map((st, i) => (
+                    {[{ v: (users || []).length, l: 'Users', c: '#4ECDC4' }, { v: (stores || []).length, l: 'Stores', c: '#FF8E53' }, { v: (offers || []).length, l: 'Offers', c: '#A18CD1' }, { v: (pendingStores || []).length, l: 'Pending', c: '#FF6B6B' }].map((st, i) => (
                         <View key={i} style={s.statCard}><Text style={[s.statVal, { color: st.c }]}>{st.v}</Text><Text style={s.statLbl}>{st.l}</Text></View>
                     ))}
                 </View>

@@ -33,4 +33,45 @@ router.get('/:id', (req, res) => {
     }
 });
 
+// Create new offer
+router.post('/', (req, res) => {
+    const { title, description, discount, originalPrice, storeId, expiryDate, category, isOnline, image } = req.body;
+    const newOffer = {
+        id: 'o' + Date.now(),
+        title,
+        description,
+        discount,
+        originalPrice,
+        storeId,
+        expiryDate,
+        category,
+        isOnline: !!isOnline,
+        image: image || null
+    };
+    OFFERS.push(newOffer);
+    res.status(201).json({ success: true, offer: newOffer });
+});
+
+// Update offer
+router.put('/:id', (req, res) => {
+    const index = OFFERS.findIndex((o) => o.id === req.params.id);
+    if (index !== -1) {
+        OFFERS[index] = { ...OFFERS[index], ...req.body };
+        res.json({ success: true, offer: OFFERS[index] });
+    } else {
+        res.status(404).json({ success: false, message: 'Offer not found' });
+    }
+});
+
+// Delete offer
+router.delete('/:id', (req, res) => {
+    const index = OFFERS.findIndex((o) => o.id === req.params.id);
+    if (index !== -1) {
+        OFFERS.splice(index, 1);
+        res.json({ success: true, message: 'Offer deleted' });
+    } else {
+        res.status(404).json({ success: false, message: 'Offer not found' });
+    }
+});
+
 module.exports = router;
