@@ -4,11 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
-import { CATEGORIES } from '../data/mockData';
 
 const StoreOwnerDashboardScreen = () => {
     const { user, logout } = useAuth();
-    const { getStoresByOwner, getOffersByStore, addOffer, updateOffer, deleteOffer, registerStore } = useData();
+    const { getStoresByOwner, getOffersByStore, addOffer, updateOffer, deleteOffer, registerStore, categories } = useData();
     const [activeTab, setActiveTab] = useState('offers');
     const [showAddOffer, setShowAddOffer] = useState(false);
     const [showAddStore, setShowAddStore] = useState(false);
@@ -161,7 +160,7 @@ const StoreOwnerDashboardScreen = () => {
                             <TextInput style={s.mInput} placeholder="Expiry (YYYY-MM-DD)" placeholderTextColor="#8E8E93" value={offerExpiry} onChangeText={setOfferExpiry} />
                             <Text style={s.mLabel}>Category</Text>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}><View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
-                                {CATEGORIES.filter(c => c !== 'All').map(c => <TouchableOpacity key={c} style={[s.chip, offerCategory === c && s.chipA]} onPress={() => setOfferCategory(c)}><Text style={[s.chipT, offerCategory === c && s.chipTA]}>{c}</Text></TouchableOpacity>)}
+                                {categories.filter(c => c !== 'All').map(c => <TouchableOpacity key={c} style={[s.chip, offerCategory === c && s.chipA]} onPress={() => setOfferCategory(c)}><Text style={[s.chipT, offerCategory === c && s.chipTA]}>{c}</Text></TouchableOpacity>)}
                             </View></ScrollView>
                             <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 10 }} onPress={() => setOfferIsOnline(!offerIsOnline)}>
                                 <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Available Online</Text>
@@ -179,7 +178,7 @@ const StoreOwnerDashboardScreen = () => {
                         <TextInput style={s.mInput} placeholder="Location *" placeholderTextColor="#8E8E93" value={storeLocation} onChangeText={setStoreLocation} />
                         <Text style={s.mLabel}>Category</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}><View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
-                            {CATEGORIES.filter(c => c !== 'All').map(c => <TouchableOpacity key={c} style={[s.chip, storeCategory === c && s.chipA]} onPress={() => setStoreCategory(c)}><Text style={[s.chipT, storeCategory === c && s.chipTA]}>{c}</Text></TouchableOpacity>)}
+                            {categories.filter(c => c !== 'All').map(c => <TouchableOpacity key={c} style={[s.chip, storeCategory === c && s.chipA]} onPress={() => setStoreCategory(c)}><Text style={[s.chipT, storeCategory === c && s.chipTA]}>{c}</Text></TouchableOpacity>)}
                         </View></ScrollView>
                         <TouchableOpacity style={s.mSubmit} onPress={handleAddStore}><LinearGradient colors={['#4ECDC4', '#44B39D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.mSubmitG}><Text style={s.mSubmitT}>Submit for Approval</Text></LinearGradient></TouchableOpacity>
                     </LinearGradient></View></View>

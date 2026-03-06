@@ -15,16 +15,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
-import { CATEGORIES } from '../data/mockData';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.44;
 
-const HomeScreen = ({ navigation }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+export default function HomeScreen({ navigation }) {
+    const { user } = useAuth();
+    const { offers, categories, isLoading, getActiveOffers, getStoreById } = useData();
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const { user, logout } = useAuth();
-    const { getActiveOffers, getStoreById } = useData();
+    const [searchQuery, setSearchQuery] = useState('');
 
     const activeOffers = getActiveOffers();
 
@@ -486,5 +485,3 @@ const styles = StyleSheet.create({
         marginTop: 6,
     },
 });
-
-export default HomeScreen;

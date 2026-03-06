@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { USERS } from '../data/mockData';
+import apiClient from '../services/apiClient';
 
 const AuthContext = createContext();
 
@@ -8,7 +8,6 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [users, setUsers] = useState(USERS);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -29,40 +28,35 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (email, password) => {
-        const found = users.find(
-            (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-        );
-        if (found) {
-            setUser(found);
-            await AsyncStorage.setItem('currentUser', JSON.stringify(found));
-            return { success: true, user: found };
+        try {
+            const response = await apiClient.post('/auth/login', { email, password });
+            if (response.success) {
+                setUser(response.user);
+                await AsyncStorage.setItem('currentUser', JSON.stringify(response.user));
+                return { success: true, user: response.user };
+            }
+            return { success: false, message: response.message || 'Login failed' };
+        } catch (error) {
+            return { success: false, message: error.message || 'An error occurred during login' };
         }
-        return { success: false, message: 'Invalid email or password' };
     };
 
     const register = async (name, email, password, role) => {
-        const exists = users.find(
-            (u) => u.email.toLowerCase() === email.toLowerCase()
-        );
-        if (exists) {
-            return { success: false, message: 'Email already registered' };
+        try {
+            const response = await apiClient.post('/auth/register', { name, email, password, role });
+            if (response.success) {
+                setUser(response.user);
+                await AsyncStorage.setItem('currentUser', JSON.stringify(response.user));
+                return { success: true, user: response.user };
+            }
+            return { success: false, message: response.message || 'Registration failed' };
+        } catch (error) {
+            return { success: false, message: error.message || 'An error occurred during registration' };
         }
-        const newUser = {
-            id: 'u' + Date.now(),
-            name,
-            email,
-            password,
-            role,
-        };
-        setUsers((prev) => [...prev, newUser]);
-        setUser(newUser);
-        await AsyncStorage.setItem('currentUser', JSON.stringify(newUser));
-        return { success: true, user: newUser };
     };
 
     const logout = async () => {
         try {
-            console.log('Logging out user...');
             await AsyncStorage.removeItem('currentUser');
             setUser(null);
         } catch (e) {

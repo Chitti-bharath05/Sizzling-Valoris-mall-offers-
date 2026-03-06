@@ -1,37 +1,58 @@
-import React, { createContext, useState, useContext } from 'react';
-import { STORES, OFFERS, ORDERS } from '../data/mockData';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../services/apiClient';
 
 const DataContext = createContext();
 
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-    const [stores, setStores] = useState(STORES);
-    const [offers, setOffers] = useState(OFFERS);
-    const [orders, setOrders] = useState(ORDERS);
+    // --- Data Fetching with React Query ---
+
+    const {
+        data: stores = [],
+        isLoading: isLoadingStores,
+        refetch: refetchStores
+    } = useQuery({
+        queryKey: ['stores'],
+        queryFn: () => apiClient.get('/stores'),
+    });
+
+    const {
+        data: offers = [],
+        isLoading: isLoadingOffers,
+        refetch: refetchOffers
+    } = useQuery({
+        queryKey: ['offers'],
+        queryFn: () => apiClient.get('/offers'),
+    });
+
+    const {
+        data: categories = [],
+        isLoading: isLoadingCategories
+    } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => apiClient.get('/categories'),
+    });
+
+    // Mocking orders for now as they are usually user-specific and dynamic
+    const [orders, setOrders] = useState([]);
 
     // ---- Store operations ----
-    const registerStore = (storeName, ownerId, location, category) => {
-        const newStore = {
-            id: 's' + Date.now(),
-            storeName,
-            ownerId,
-            location,
-            approved: false,
-            category,
-        };
-        setStores((prev) => [...prev, newStore]);
-        return newStore;
+    const registerStore = async (storeName, ownerId, location, category) => {
+        // In a real app, this would be an API call
+        console.log('Registering store:', { storeName, ownerId, location, category });
+        refetchStores();
     };
 
-    const approveStore = (storeId) => {
-        setStores((prev) =>
-            prev.map((s) => (s.id === storeId ? { ...s, approved: true } : s))
-        );
+    const approveStore = async (storeId) => {
+        // API call to approve
+        refetchStores();
     };
 
-    const rejectStore = (storeId) => {
-        setStores((prev) => prev.filter((s) => s.id !== storeId));
+    const rejectStore = async (storeId) => {
+        // API call to reject
+        refetchStores();
     };
 
     const getStoresByOwner = (ownerId) => {
@@ -51,23 +72,19 @@ export const DataProvider = ({ children }) => {
     };
 
     // ---- Offer operations ----
-    const addOffer = (offerData) => {
-        const newOffer = {
-            id: 'o' + Date.now(),
-            ...offerData,
-        };
-        setOffers((prev) => [...prev, newOffer]);
-        return newOffer;
+    const addOffer = async (offerData) => {
+        // API call to add
+        refetchOffers();
     };
 
-    const updateOffer = (offerId, updates) => {
-        setOffers((prev) =>
-            prev.map((o) => (o.id === offerId ? { ...o, ...updates } : o))
-        );
+    const updateOffer = async (offerId, updates) => {
+        // API call to update
+        refetchOffers();
     };
 
-    const deleteOffer = (offerId) => {
-        setOffers((prev) => prev.filter((o) => o.id !== offerId));
+    const deleteOffer = async (offerId) => {
+        // API call to delete
+        refetchOffers();
     };
 
     const getOffersByStore = (storeId) => {
@@ -109,7 +126,9 @@ export const DataProvider = ({ children }) => {
             value={{
                 stores,
                 offers,
+                categories,
                 orders,
+                isLoading: isLoadingStores || isLoadingOffers || isLoadingCategories,
                 registerStore,
                 approveStore,
                 rejectStore,
@@ -125,6 +144,8 @@ export const DataProvider = ({ children }) => {
                 getOfferById,
                 placeOrder,
                 getOrdersByUser,
+                refetchStores,
+                refetchOffers
             }}
         >
             {children}

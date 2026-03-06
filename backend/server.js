@@ -21,12 +21,14 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'up', timestamp: new Date() });
 });
 
-// Demo Data Endpoint (Mock)
-app.get('/api/offers', (req, res) => {
-    res.json([
-        { id: '1', title: 'Grand Opening Sale', discount: '50%', store: 'Fashion Hub' },
-        { id: '2', title: 'Tech Weekend', discount: '20%', store: 'Gadget World' }
-    ]);
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/offers', require('./routes/offers'));
+app.use('/api/stores', require('./routes/stores'));
+
+app.get('/api/categories', (req, res) => {
+    const { CATEGORIES } = require('./data/mockData');
+    res.json(CATEGORIES);
 });
 
 app.listen(PORT, () => {
