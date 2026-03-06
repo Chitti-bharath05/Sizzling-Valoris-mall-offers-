@@ -1,0 +1,10 @@
+node_modules/
+.env
+.DS_Store
+.expo/
+dist/
+build/
+backend/node_modules/
+backend/.env
+mall-offers-app/node_modules/
+mall-offers-app/.env
