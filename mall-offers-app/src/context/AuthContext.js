@@ -65,23 +65,14 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const getAllUsers = () => users;
-
-    const deleteUser = (userId) => {
-        setUsers((prev) => prev.filter((u) => u.id !== userId));
-    };
-
     return (
         <AuthContext.Provider
             value={{
                 user,
-                users,
                 isLoading,
                 login,
                 register,
                 logout,
-                getAllUsers,
-                deleteUser,
             }}
         >
             {children}
