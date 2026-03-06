@@ -5,22 +5,22 @@ const { OFFERS } = require('../data/mockData');
 // Get all offers
 router.get('/', (req, res) => {
     const { category, search } = req.query;
-    let filtered = OFFERS;
+    let filteredOffers = OFFERS || [];
 
     if (category && category !== 'All') {
-        filtered = filtered.filter((o) => o.category === category);
+        filteredOffers = filteredOffers.filter((o) => o.category === category);
     }
 
     if (search) {
         const q = search.toLowerCase();
-        filtered = filtered.filter(
+        filteredOffers = filteredOffers.filter(
             (o) =>
                 o.title.toLowerCase().includes(q) ||
                 o.description.toLowerCase().includes(q)
         );
     }
 
-    res.json(filtered);
+    res.json(filteredOffers);
 });
 
 // Get single offer

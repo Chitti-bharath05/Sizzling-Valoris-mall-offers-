@@ -23,7 +23,16 @@ const StoreOwnerDashboardScreen = () => {
     const [storeLocation, setStoreLocation] = useState('');
     const [storeCategory, setStoreCategory] = useState('Fashion');
 
-    const myStores = getStoresByOwner(user.id);
+    if (isLoading || !user) {
+        return (
+            <View style={[s.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={StyleSheet.absoluteFill} />
+                <Text style={{ color: '#fff', fontSize: 18 }}>Loading Dashboard...</Text>
+            </View>
+        );
+    }
+
+    const myStores = getStoresByOwner(user.id) || [];
     const approvedStores = myStores.filter(s => s.approved);
     const allMyOffers = myStores.flatMap(store => getOffersByStore(store.id).map(o => ({ ...o, storeName: store.storeName })));
 

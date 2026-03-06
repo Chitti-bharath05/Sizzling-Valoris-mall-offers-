@@ -25,23 +25,32 @@ export default function HomeScreen({ navigation }) {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
 
-    const activeOffers = getActiveOffers();
+    const activeOffers = getActiveOffers() || [];
 
     const filteredOffers = useMemo(() => {
         let filtered = activeOffers;
         if (selectedCategory !== 'All') {
-            filtered = filtered.filter((o) => o.category === selectedCategory);
+            filtered = filtered.filter((o) => o?.category === selectedCategory);
         }
         if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
             filtered = filtered.filter(
                 (o) =>
-                    o.title.toLowerCase().includes(q) ||
-                    o.description.toLowerCase().includes(q)
+                    o?.title?.toLowerCase().includes(q) ||
+                    o?.description?.toLowerCase().includes(q)
             );
         }
         return filtered;
     }, [activeOffers, selectedCategory, searchQuery]);
+
+    if (isLoading) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={StyleSheet.absoluteFill} />
+                <Text style={{ color: '#fff', fontSize: 18 }}>Loading Offers...</Text>
+            </View>
+        );
+    }
 
     const getCategoryIcon = (cat) => {
         const icons = {
@@ -70,8 +79,10 @@ export default function HomeScreen({ navigation }) {
 
     const renderOfferCard = ({ item, index }) => {
         const store = getStoreById(item.storeId);
+        const originalPrice = item.originalPrice || 0;
+        const discount = item.discount || 0;
         const discountedPrice = Math.round(
-            item.originalPrice * (1 - item.discount / 100)
+            originalPrice * (1 - discount / 100)
         );
         const gradientColors = getOfferColor(index);
 

@@ -6,10 +6,22 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 
 const AdminDashboardScreen = () => {
-    const { users, deleteUser } = useAuth();
-    const { stores, offers, getPendingStores, approveStore, rejectStore, deleteOffer } = useData();
+    const { user, users, deleteUser, logout, isLoading: authLoading } = useAuth();
+    const { stores, offers, getPendingStores, approveStore, rejectStore, deleteOffer, isLoading: dataLoading } = useData();
     const [activeTab, setActiveTab] = useState('approvals');
-    const pendingStores = getPendingStores();
+
+    const isLoading = authLoading || dataLoading;
+
+    if (isLoading || !user) {
+        return (
+            <View style={[s.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={StyleSheet.absoluteFill} />
+                <Text style={{ color: '#fff', fontSize: 18 }}>Loading Admin Panel...</Text>
+            </View>
+        );
+    }
+
+    const pendingStores = getPendingStores() || [];
 
     const handleApprove = (id) => { approveStore(id); Alert.alert('Approved', 'Store has been approved'); };
     const handleReject = (id) => {

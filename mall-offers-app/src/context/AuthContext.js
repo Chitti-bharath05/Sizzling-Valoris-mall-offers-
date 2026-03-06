@@ -8,10 +8,12 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         loadUser();
+        fetchUsers();
     }, []);
 
     const loadUser = async () => {
@@ -22,6 +24,17 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (e) {
             console.log('Error loading user:', e);
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const response = await apiClient.get('/auth/users');
+            if (Array.isArray(response)) {
+                setUsers(response);
+            }
+        } catch (e) {
+            console.log('Error fetching users:', e);
         } finally {
             setIsLoading(false);
         }
@@ -69,10 +82,13 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider
             value={{
                 user,
+                users,
                 isLoading,
                 login,
                 register,
                 logout,
+                fetchUsers,
+                deleteUser: (id) => setUsers(prev => prev.filter(u => u.id !== id)),
             }}
         >
             {children}

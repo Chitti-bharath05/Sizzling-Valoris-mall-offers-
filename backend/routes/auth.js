@@ -15,10 +15,11 @@ router.post('/login', (req, res) => {
     );
 
     if (user) {
-        return res.json({ success: true, user });
+        const { password, ...userWithoutPassword } = user;
+        return res.json({ success: true, user: userWithoutPassword });
+    } else {
+        return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
-
-    return res.status(401).json({ success: false, message: 'Invalid email or password' });
 });
 
 // Register Route
@@ -29,9 +30,8 @@ router.post('/register', (req, res) => {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
-    const exists = USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (exists) {
-        return res.status(400).json({ success: false, message: 'Email already registered' });
+    if (USERS.find((u) => u.email.toLowerCase() === email.toLowerCase())) {
+        return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
     const newUser = {
@@ -42,9 +42,15 @@ router.post('/register', (req, res) => {
         role,
     };
 
-    // In a real app, we would push to DB. For now, it's just in-memory for this process.
-    // Note: USERS is a constant here, so it won't persist across restarts.
+    // Note: In a real app we'd push to USERS or DB.
+    // Here we just return success.
     return res.json({ success: true, user: newUser });
+});
+
+router.get('/users', (req, res) => {
+    // Return users without passwords
+    const safeUsers = USERS.map(({ password, ...rest }) => rest);
+    res.json(safeUsers || []);
 });
 
 module.exports = router;
