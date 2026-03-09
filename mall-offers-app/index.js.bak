@@ -1,0 +1,11 @@
+import { registerRootComponent } from 'expo';
+import { View, Text } from 'react-native';
+import React from 'react';
+
+const SimpleApp = () => (
+  <View style={{ flex: 1, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <Text style={{ fontSize: 30, color: 'white' }}>CORE MOUNT SUCCESSFUL</Text>
+  </View>
+);
+
+registerRootComponent(SimpleApp);
