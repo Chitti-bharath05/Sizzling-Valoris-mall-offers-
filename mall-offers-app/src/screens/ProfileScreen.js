@@ -97,10 +97,16 @@ const ProfileScreen = ({ navigation }) => {
                     <TouchableOpacity 
                         style={s.logoutBtn} 
                         onPress={() => {
-                            Alert.alert(t('sign_out'), 'Are you sure you want to sign out?', [
-                                { text: t('cancel'), style: 'cancel' },
-                                { text: t('sign_out'), style: 'destructive', onPress: logout }
-                            ]);
+                            if (Platform.OS === 'web') {
+                                if (window.confirm('Are you sure you want to sign out?')) {
+                                    logout();
+                                }
+                            } else {
+                                Alert.alert(t('sign_out'), 'Are you sure you want to sign out?', [
+                                    { text: t('cancel'), style: 'cancel' },
+                                    { text: t('sign_out'), style: 'destructive', onPress: () => logout() }
+                                ]);
+                            }
                         }}
                     >
                         <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />

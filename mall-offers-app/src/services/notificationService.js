@@ -55,9 +55,12 @@ export async function registerForPushNotifications() {
             console.log('Expo Push Token:', token);
         } catch (tokenError) {
             console.log('Push Token skipped (Firebase not initialized or running in Expo Go Android):', tokenError.message);
+            // Explicitly return null so it doesn't try to continue or throw up to the caller
+            return null;
         }
     } catch (error) {
-        console.error('Error in push notification registration:', error);
+        console.log('Error in push notification registration (safely caught):', error.message);
+        return null; // Ensure we always return null on failure, not an unhandled rejection
     }
 
     // Set up Android notification channel

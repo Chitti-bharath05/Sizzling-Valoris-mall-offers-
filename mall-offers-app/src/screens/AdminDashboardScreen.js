@@ -91,7 +91,7 @@ const AdminDashboardScreen = () => {
                                 } else {
                                     Alert.alert(t('sign_out'), t('delete_confirm'), [
                                         { text: t('cancel'), style: 'cancel' },
-                                        { text: t('confirm'), style: 'destructive', onPress: doLogout }
+                                        { text: t('confirm'), style: 'destructive', onPress: () => doLogout() }
                                     ]);
                                 }
                             }}

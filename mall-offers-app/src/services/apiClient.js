@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // - Physical Device (Expo Go): Use your computer's local IP address
 const BASE_URL = Platform.OS === 'web'
     ? 'http://localhost:5000/api'
-    : 'http://192.168.0.109:5000/api'; // Your computer's LAN IP
+    : 'http://172.31.4.111:5000/api'; // Your computer's LAN IP
 
 const apiClient = axios.create({
     baseURL: BASE_URL,

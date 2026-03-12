@@ -37,12 +37,17 @@ export const AuthProvider = ({ children }) => {
 
     const setupPushNotifications = async () => {
         try {
-            const token = await registerForPushNotifications();
-            if (token) {
-                await savePushTokenToBackend(token);
+            console.log("Starting push notification setup...");
+            try {
+                const token = await registerForPushNotifications();
+                if (token) {
+                    await savePushTokenToBackend(token);
+                }
+            } catch (innerError) {
+                console.log('Inner push setup error safely caught:', innerError);
             }
         } catch (e) {
-            console.log('Push notification setup error:', e);
+            console.log('Push notification setup error (safely caught):', e);
         }
     };
 
@@ -118,17 +123,24 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             const stored = await AsyncStorage.getItem('userInfo');
+            
+            // Clear local state FIRST, so the UI updates immediately
+            await AsyncStorage.removeItem('userInfo');
+            setUser(null);
+
             if (stored) {
                 const { refreshToken } = JSON.parse(stored);
                 if (refreshToken) {
-                    await apiClient.post('/auth/logout', { refreshToken });
+                    // Fire and forget the backend logout
+                    apiClient.post('/auth/logout', { refreshToken }).catch(e => {
+                        console.log('Backend logout failed silently:', e.message);
+                    });
                 }
             }
-            await AsyncStorage.removeItem('userInfo');
-            setUser(null);
         } catch (e) {
             console.error('Logout error:', e);
-            await AsyncStorage.removeItem('userInfo');
+            // Ensure state is cleared even if something went wrong
+            await AsyncStorage.removeItem('userInfo').catch(() => {});
             setUser(null);
         }
     };

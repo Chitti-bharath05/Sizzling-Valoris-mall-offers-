@@ -326,8 +326,9 @@ router.put('/resetpassword', async (req, res) => {
 router.post('/push-token', protect, async (req, res) => {
     try {
         const { pushToken } = req.body;
-        if (!pushToken) {
-            return res.status(400).json({ success: false, message: 'Push token required' });
+        // Allow pushToken to be null/undefined, it just means they don't have notifications enabled
+        if (pushToken === undefined) {
+            return res.status(400).json({ success: false, message: 'Push token field missing' });
         }
 
         await User.findByIdAndUpdate(req.user._id, { pushToken });

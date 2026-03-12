@@ -50,6 +50,8 @@ const ProfileStack = () => (
         <Stack.Screen name="Legal" component={LegalScreen} />
         <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
         <Stack.Screen name="Deals" component={OffersScreen} />
+        <Stack.Screen name="OfferDetails" component={OfferDetailsScreen} />
+        <Stack.Screen name="Favorites" component={FavoritesScreen} />
     </Stack.Navigator>
 );
 

@@ -117,7 +117,18 @@ const StoreOwnerDashboardScreen = () => {
                             <Text style={s.headerTitle}>{t('store_dash')}</Text>
                             <Text style={s.headerSub}>{t('manage_stores_offers')}</Text>
                         </View>
-                        <TouchableOpacity style={s.headerLogout} onPress={logout}>
+                        <TouchableOpacity style={s.headerLogout} onPress={() => {
+                            if (Platform.OS === 'web') {
+                                if (window.confirm('Are you sure you want to sign out?')) {
+                                    logout();
+                                }
+                            } else {
+                                Alert.alert(t('sign_out'), 'Are you sure you want to sign out?', [
+                                    { text: t('cancel'), style: 'cancel' },
+                                    { text: t('sign_out'), style: 'destructive', onPress: () => logout() }
+                                ]);
+                            }
+                        }}>
                             <Ionicons name="log-out-outline" size={24} color="#D4AF37" />
                         </TouchableOpacity>
                     </View>
