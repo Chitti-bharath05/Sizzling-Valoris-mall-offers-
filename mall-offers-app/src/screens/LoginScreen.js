@@ -38,20 +38,23 @@ const LoginScreen = ({ navigation }) => {
     const { t } = useLanguage();
 
     const isExpoGo = Constants.appOwnership === 'expo';
+    const isStandalone = !isExpoGo && Platform.OS !== 'web';
     
-    // Improved Redirect URI logic
+    // EXTREMELY IMPORTANT:
+    // - Expo Go: useProxy=true (AuthSession Proxy handles it)
+    // - Standalone APK: useProxy=false (Uses custom scheme com.credora.malloffersapp://)
+    // - Web: useProxy=false (Standard browser redirect)
+    const useProxy = isExpoGo && Platform.OS !== 'web';
+
     const redirectUri = makeRedirectUri({
         scheme: 'com.credora.malloffersapp',
         path: 'oauthredirect',
-        // useProxy: true is REQUIRED for Google Auth in Expo Go (Mobile)
-        // useProxy: false is REQUIRED for Standalone builds and Web
-        useProxy: isExpoGo && Platform.OS !== 'web' 
+        useProxy
     });
 
     const [request, response, promptAsync] = Google.useAuthRequest({
-        // For Expo Go: Use the Web Client ID (Auth Session Proxy handles it)
-        // For Standalone: Expo uses the native Android/iOS Client IDs
-        // For Web: Use the Web Client ID directly
+        // For Expo Go & Web: We must provide the Web Client ID
+        // For Standalone: Google prefers the Native Client ID (androidClientId)
         clientId: (isExpoGo || Platform.OS === 'web')
             ? '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com' 
             : undefined,
@@ -61,21 +64,13 @@ const LoginScreen = ({ navigation }) => {
         redirectUri
     });
 
-    // Debugging render state
+    // Logging to help debug production APK issues
     React.useEffect(() => {
-        // These logs appear in the Browser Console (Press F12 on Web)
-        console.log('[DEBUG] LoginScreen Loaded');
-        console.log('[DEBUG] Platform:', Platform.OS);
-        console.log('[DEBUG] Redirect URI:', redirectUri);
+        const envInfo = `Env: ${isExpoGo ? 'Expo Go' : (isStandalone ? 'Standalone APK' : 'Web')} | Scheme: com.credora.malloffersapp | Redirect: ${redirectUri}`;
+        console.log('[DEBUG] Google Auth Config:', envInfo);
         
         if (response) {
-            console.log('[DEBUG] OAuth Response:', response);
-            
-            // For Web, browser alerts are helpful
-            if (Platform.OS === 'web') {
-                console.log('%c --- GOOGLE RESPONSE RECEIVED --- ', 'background: #222; color: #bada55');
-                console.log('Response Type:', response.type);
-            }
+            console.log('[DEBUG] Response Received:', response.type, response.error || '');
         }
     }, [response]);
 
