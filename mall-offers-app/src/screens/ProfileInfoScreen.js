@@ -46,7 +46,6 @@ export default function ProfileInfoScreen({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
                             <Ionicons name="arrow-back" size={24} color="#fff" />
                         </TouchableOpacity>
-                        <NavigationControls />
                     </View>
                     <Text style={s.headerTitle}>{t('prof_info')}</Text>
                     <View style={{ width: 44 }} />

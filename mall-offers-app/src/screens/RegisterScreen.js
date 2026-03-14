@@ -95,7 +95,6 @@ const RegisterScreen = ({ navigation }) => {
                             >
                                 <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                             </TouchableOpacity>
-                            <NavigationControls />
                         </View>
 
                         <View style={styles.headerContainer}>

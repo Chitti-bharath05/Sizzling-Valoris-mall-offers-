@@ -30,7 +30,6 @@ export default function HelpSupportScreen({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
                             <Ionicons name="arrow-back" size={24} color="#fff" />
                         </TouchableOpacity>
-                        <NavigationControls />
                     </View>
                     <Text style={s.headerTitle}>{t('support')}</Text>
                     <View style={{ width: 44 }} />

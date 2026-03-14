@@ -17,7 +17,6 @@ export default function LegalScreen({ route, navigation }) {
                         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
                             <Ionicons name="arrow-back" size={24} color="#fff" />
                         </TouchableOpacity>
-                        <NavigationControls />
                     </View>
                     <Text style={s.headerTitle}>{title}</Text>
                     <View style={{ width: 44 }} />

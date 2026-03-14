@@ -48,7 +48,6 @@ export default function MapScreen({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
                             <Ionicons name="arrow-back" size={24} color="#fff" />
                         </TouchableOpacity>
-                        <NavigationControls />
                     </View>
                     <Text style={s.headerTitle}>{t('store_directory') || 'Store Directory'}</Text>
                     <View style={{ width: 44 }} />

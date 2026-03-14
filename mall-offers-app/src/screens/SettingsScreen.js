@@ -110,7 +110,6 @@ export default function SettingsScreen({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.goBack()} style={s.backBtn}>
                             <Ionicons name="arrow-back" size={24} color="#fff" />
                         </TouchableOpacity>
-                        <NavigationControls />
                     </View>
                     <Text style={s.headerTitle}>{t('settings')}</Text>
                     <View style={{ width: 44 }} />

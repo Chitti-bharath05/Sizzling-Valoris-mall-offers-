@@ -2,23 +2,23 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavHistory } from '../context/NavigationHistoryContext';
-import { useNavigationState } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 const NavigationControls = () => {
     const { canGoBack, canGoForward, goBack, goForward } = useNavHistory();
+    const route = useRoute();
     const isWeb = Platform.OS === 'web';
 
     // Logic: Only show on specific "Leaf" screens or if we are deep in a stack
-    const currentRouteName = useNavigationState(state => {
-        if (!state) return null;
-        const route = state.routes[state.index];
-        // Handle nested navigators
-        if (route.state) return route.state.routes[route.state.index].name;
-        return route.name;
-    });
+    const currentRouteName = route.name;
 
+    // Screens where we EXPLICITLY allow these controls
     const allowedScreens = ['OfferDetails', 'ProfileInfo', 'ChangePassword', 'Legal', 'HelpSupport', 'Deals'];
-    const isVisible = allowedScreens.includes(currentRouteName);
+    
+    // Screens where we EXPLICITLY block these controls (Safety net)
+    const blockedScreens = ['HomeMain', 'ProfileMain', 'Dashboard', 'AdminDashboard', 'Map'];
+    
+    const isVisible = allowedScreens.includes(currentRouteName) && !blockedScreens.includes(currentRouteName);
 
     if (!isVisible) return null;
 
