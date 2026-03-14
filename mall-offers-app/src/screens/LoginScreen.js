@@ -133,40 +133,6 @@ const LoginScreen = ({ navigation }) => {
         }
     };
 
-    const handleAppleLogin = async () => {
-        try {
-            const credential = await AppleAuthentication.signInAsync({
-                requestedScopes: [
-                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
-                ],
-            });
-            
-            const socialData = {
-                provider: 'apple',
-                id: credential.user,
-                email: credential.email,
-                name: `${credential.fullName.givenName || ''} ${credential.fullName.familyName || ''}`.trim() || 'Apple User'
-            };
-
-            setSocialLoading(true);
-            const result = await socialLogin('apple', socialData);
-            
-            if (result.requiresRole) {
-                setPendingSocialData(socialData);
-                setShowRoleModal(true);
-            } else if (!result.success) {
-                Alert.alert('Error', result.message);
-            }
-        } catch (e) {
-            if (e.code !== 'ERR_CANCELED') {
-                Alert.alert('Error', 'Apple login failed');
-            }
-        } finally {
-            setSocialLoading(false);
-        }
-    };
-
     const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {
             Alert.alert('Error', 'Please fill in all fields');
@@ -286,22 +252,6 @@ const LoginScreen = ({ navigation }) => {
                                         </>
                                     )}
                                 </TouchableOpacity>
-                                
-                                {Platform.OS === 'ios' || Platform.OS === 'web' ? (
-                                    <TouchableOpacity 
-                                        style={[s.socialBtn, { backgroundColor: '#000', borderWidth: 1, borderColor: '#fff' }]} 
-                                        onPress={handleAppleLogin}
-                                    >
-                                        {socialLoading && pendingSocialData?.provider === 'apple' ? (
-                                            <ActivityIndicator color="#fff" />
-                                        ) : (
-                                            <>
-                                                <Ionicons name="logo-apple" size={20} color="#fff" style={{ marginRight: 8 }} />
-                                                <Text style={s.socialText}>Apple</Text>
-                                            </>
-                                        )}
-                                    </TouchableOpacity>
-                                ) : null}
                             </View>
 
                             <TouchableOpacity style={s.registerLink} onPress={() => navigation.navigate('Register')}>
