@@ -17,7 +17,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import NavigationControls from '../components/NavigationControls';
 
 const { width } = Dimensions.get('window');
 
