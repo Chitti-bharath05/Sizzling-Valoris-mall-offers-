@@ -4,25 +4,24 @@ const User = require('../models/User');
 const expo = new Expo();
 
 /**
- * Send push notifications to all customers with valid push tokens.
+ * Send push notifications to users based on their role.
  * @param {string} title - Notification title
  * @param {string} body - Notification body
+ * @param {string|null} role - Target role (e.g., 'customer', 'admin') or null for all
  * @param {object} data - Optional extra data payload
  */
-const sendPushNotificationToAll = async (title, body, data = {}) => {
+const sendPushNotifications = async (title, body, role = null, data = {}) => {
     try {
-        // Get all users with valid push tokens
-        const users = await User.find({
-            pushToken: { $exists: true, $ne: null, $ne: '' },
-            role: 'customer'
-        }).select('pushToken');
+        const query = { pushToken: { $exists: true, $ne: null, $ne: '' } };
+        if (role) query.role = role;
+
+        const users = await User.find(query).select('pushToken');
 
         if (users.length === 0) {
-            console.log('No users with push tokens found.');
+            console.log(`No users with role ${role || 'any'} and push tokens found.`);
             return;
         }
 
-        // Build notification messages
         const messages = [];
         for (const user of users) {
             if (!Expo.isExpoPushToken(user.pushToken)) {
@@ -39,7 +38,6 @@ const sendPushNotificationToAll = async (title, body, data = {}) => {
             });
         }
 
-        // Send in chunks (Expo recommends batching)
         const chunks = expo.chunkPushNotifications(messages);
         const tickets = [];
 
@@ -52,11 +50,19 @@ const sendPushNotificationToAll = async (title, body, data = {}) => {
             }
         }
 
-        console.log(`Push notifications sent: ${tickets.length} tickets`);
+        console.log(`Push notifications sent: ${tickets.length} tickets to ${role || 'all users'}`);
         return tickets;
     } catch (error) {
-        console.error('Error in sendPushNotificationToAll:', error);
+        console.error('Error in sendPushNotifications:', error);
     }
 };
 
-module.exports = { sendPushNotificationToAll };
+const sendPushNotificationToAll = (title, body, data = {}) => sendPushNotifications(title, body, null, data);
+const sendPushNotificationToCustomers = (title, body, data = {}) => sendPushNotifications(title, body, 'customer', data);
+const sendPushNotificationToAdmins = (title, body, data = {}) => sendPushNotifications(title, body, 'admin', data);
+
+module.exports = { 
+    sendPushNotificationToAll, 
+    sendPushNotificationToCustomers, 
+    sendPushNotificationToAdmins 
+};

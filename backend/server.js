@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const { initExpiryJob } = require('./utils/expiryJob');
 
 dotenv.config();
 
@@ -47,4 +48,5 @@ app.get('/api/categories', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    initExpiryJob(); // Start daily cron tasks
 });

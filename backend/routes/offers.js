@@ -4,7 +4,7 @@ const Offer = require('../models/Offer');
 const Store = require('../models/Store');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validation');
-const { sendPushNotificationToAll } = require('../utils/notificationService');
+const { sendPushNotificationToCustomers } = require('../utils/notificationService');
 
 // Get all offers (Public)
 router.get('/', async (req, res) => {
@@ -67,7 +67,7 @@ router.post('/', protect, authorize('store_owner', 'admin'), validateRequest('ad
         try {
             const store = await Store.findById(storeId);
             const storeName = store ? store.storeName : 'A store';
-            await sendPushNotificationToAll(
+            await sendPushNotificationToCustomers(
                 `🔥 New ${discount}% Off Deal!`,
                 `${title} at ${storeName}. Don't miss out!`,
                 { offerId: newOffer._id.toString(), type: 'new_offer' }

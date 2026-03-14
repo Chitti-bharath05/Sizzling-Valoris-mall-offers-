@@ -6,6 +6,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { DataProvider } from './src/context/DataContext';
 import { LanguageProvider } from './src/context/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
+import { NavigationHistoryProvider } from './src/context/NavigationHistoryContext';
 import ErrorBoundary from './ErrorBoundary';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Platform } from 'react-native';

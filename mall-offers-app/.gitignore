@@ -5,7 +5,8 @@ node_modules/
 
 # Expo
 .expo/
-dist/
+# dist/ (Commenting out so you can push it to GitHub for deployment)
+# dist/
 web-build/
 expo-env.d.ts
 

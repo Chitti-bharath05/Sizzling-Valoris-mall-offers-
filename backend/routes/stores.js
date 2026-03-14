@@ -4,6 +4,8 @@ const Store = require('../models/Store');
 const User = require('../models/User');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validation');
+const { sendPushNotificationToAdmins } = require('../utils/notificationService');
+const sendEmail = require('../utils/emailService');
 
 // Get all stores (Public)
 router.get('/', async (req, res) => {
@@ -60,6 +62,33 @@ router.post('/', protect, validateRequest('registerStore'), async (req, res) => 
             hasDeliveryPartner: !!hasDeliveryPartner,
             approved: false 
         });
+
+        // 🚀 Trigger Admin Notifications (Push & Email)
+        try {
+            const owner = await User.findById(ownerId);
+            const ownerName = owner ? owner.name : 'Unknown User';
+            
+            const message = `🏢 New Store Registration Alert!\n\nStore: ${storeName}\nOwner: ${ownerName}\nLocation: ${location}\n\nPlease log in to the admin panel to review.`;
+
+            // 1. Send Push Notification to all admins
+            await sendPushNotificationToAdmins(
+                "New Store Registration",
+                `${storeName} by ${ownerName} is waiting for approval.`,
+                { storeId: newStore._id.toString(), type: 'new_store' }
+            );
+
+            // 2. Send Emails to all admins
+            const admins = await User.find({ role: 'admin' }).select('email');
+            for (const admin of admins) {
+                await sendEmail({
+                    email: admin.email,
+                    subject: "Action Required: New Store Registered",
+                    message: message
+                });
+            }
+        } catch (notifError) {
+            console.error('Admin notification error (non-blocking):', notifError);
+        }
 
         res.status(201).json({ success: true, store: newStore });
     } catch (error) {

@@ -12,6 +12,7 @@ import {
     Platform,
     ActivityIndicator,
     TextInput,
+    useWindowDimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,6 +23,7 @@ import apiClient from '../services/apiClient';
 const { width } = Dimensions.get('window');
 
 import { useLanguage } from '../context/LanguageContext';
+import NavigationControls from '../components/NavigationControls';
 
 const OfferDetailsScreen = ({ route, navigation }) => {
     const { offerId } = route.params;
@@ -32,6 +34,10 @@ const OfferDetailsScreen = ({ route, navigation }) => {
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { width } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
+    const contentWidth = isWeb ? Math.min(width, 800) : width;
 
     const offer = getOfferById(offerId);
     const store = offer?.storeId;
@@ -112,102 +118,105 @@ const OfferDetailsScreen = ({ route, navigation }) => {
                     <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                     </TouchableOpacity>
-                    <Text style={s.headerTitle}>{t('deal_details')}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <Text style={s.headerTitle}>{t('deal_details')}</Text>
+                        <NavigationControls />
+                    </View>
                     <TouchableOpacity style={s.shareBtn}>
                         <Ionicons name="share-social" size={22} color="#FFFFFF" />
                     </TouchableOpacity>
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
-                    
-                    {/* Hero Section */}
-                    <View style={s.heroWrapper}>
-                        <Image source={{ uri: offer.image }} style={s.heroImage} />
-                        <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.8)']} style={s.heroOverlay} />
-                        
-                        <View style={s.badgeRow}>
-                            <View style={s.limitedBadge}>
-                                <Ionicons name="flash" size={12} color="#000" />
-                                <Text style={s.limitedTxt}> {t('limited_offer')}</Text>
-                            </View>
-                        </View>
-
-                        <View style={s.heroContent}>
-                            <Text style={s.discountTitle}>{offer.discount}% Off {offer.title}</Text>
-                            <Text style={s.storeSub}>{store?.storeName || 'Valoris Luxury Store'}</Text>
-                        </View>
-                    </View>
-
-                    {/* Price & Rating Intro */}
-                    <View style={s.statsRow}>
-                        <View style={s.statCard}>
-                            <Text style={s.statLabel}>{t('exclusive_price')}</Text>
-                            <Text style={s.statValue}>₹{discountedPrice.toLocaleString()}</Text>
-                        </View>
-                        {store?.averageRating > 0 && (
-                            <View style={s.statCard}>
-                                <Text style={s.statLabel}>{t('store_rating')}</Text>
-                                <View style={s.miniRate}>
-                                    <Text style={s.statValue}>{store.averageRating.toFixed(1)}</Text>
-                                    <Ionicons name="star" size={16} color="#D4AF37" style={{ marginLeft: 5 }} />
+                    <View style={[s.contentWrapper, isWeb && { width: contentWidth, alignSelf: 'center' }]}>
+                        {/* Hero Section */}
+                        <View style={s.heroWrapper}>
+                            <Image source={{ uri: offer.image }} style={s.heroImage} />
+                            <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.8)']} style={s.heroOverlay} />
+                            
+                            <View style={s.badgeRow}>
+                                <View style={s.limitedBadge}>
+                                    <Ionicons name="flash" size={12} color="#000" />
+                                    <Text style={s.limitedTxt}> {t('limited_offer')}</Text>
                                 </View>
                             </View>
-                        )}
-                    </View>
 
-                    {/* Description Section */}
-                    <View style={s.content}>
-                        <View style={s.sectionHeader}>
-                            <View style={s.goldBar} />
-                            <Text style={s.sectionTitle}>{t('about_offer')}</Text>
-                        </View>
-                        <Text style={s.descTxt}>{offer.description || 'Experience unmatched luxury with this exclusive deal from our premium boutique.'}</Text>
-                    </View>
-
-                    {/* Store & Rating Section */}
-                    <View style={s.content}>
-                        <View style={s.sectionHeader}>
-                            <View style={s.goldBar} />
-                            <Text style={s.sectionTitle}>{t('rate_store')}</Text>
-                        </View>
-                        <View style={s.ratingCard}>
-                            <Text style={s.ratingHint}>{t('rating_hint')} {store?.storeName || 'this store'}?</Text>
-                            <RatingStars current={rating} onSelect={setRating} size={32} />
-                            <TextInput 
-                                placeholder={t('rating_input_hint')} 
-                                placeholderTextColor="#555" 
-                                style={s.ratingInput}
-                                value={comment}
-                                onChangeText={setComment}
-                            />
-                            <TouchableOpacity style={s.rateBtn} onPress={submitRating} disabled={isSubmitting}>
-                                {isSubmitting ? (
-                                    <ActivityIndicator color="#000" />
-                                ) : (
-                                    <Text style={s.rateBtnTxt}>{t('submit_rating')}</Text>
-                                )}
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {/* Status Cards */}
-                    <View style={s.statusCards}>
-                        <View style={s.statusCard}>
-                            <View style={s.statusIcon}><Ionicons name="checkmark-circle" size={24} color="#D4AF37" /></View>
-                            <View>
-                                <Text style={s.statusTitle}>{t('verified_deal')}</Text>
-                                <Text style={s.statusSub}>{t('validated_by')}</Text>
+                            <View style={s.heroContent}>
+                                <Text style={s.discountTitle}>{offer.discount}% Off {offer.title}</Text>
+                                <Text style={s.storeSub}>{store?.storeName || 'Valoris Luxury Store'}</Text>
                             </View>
                         </View>
-                        <View style={s.statusCard}>
-                            <View style={[s.statusIcon, { backgroundColor: 'rgba(212,175,55,0.1)' }]}><Ionicons name="location" size={24} color="#D4AF37" /></View>
-                            <View>
-                                <Text style={s.statusTitle}>{t('in_store_offer')}</Text>
-                                <Text style={s.statusSub}>{store?.location || 'Valoris Central Mall'}</Text>
+
+                        {/* Price & Rating Intro */}
+                        <View style={s.statsRow}>
+                            <View style={s.statCard}>
+                                <Text style={s.statLabel}>{t('exclusive_price')}</Text>
+                                <Text style={s.statValue}>₹{discountedPrice.toLocaleString()}</Text>
+                            </View>
+                            {store?.averageRating > 0 && (
+                                <View style={s.statCard}>
+                                    <Text style={s.statLabel}>{t('store_rating')}</Text>
+                                    <View style={s.miniRate}>
+                                        <Text style={s.statValue}>{store.averageRating.toFixed(1)}</Text>
+                                        <Ionicons name="star" size={16} color="#D4AF37" style={{ marginLeft: 5 }} />
+                                    </View>
+                                </View>
+                            )}
+                        </View>
+
+                        {/* Description Section */}
+                        <View style={s.content}>
+                            <View style={s.sectionHeader}>
+                                <View style={s.goldBar} />
+                                <Text style={s.sectionTitle}>{t('about_offer')}</Text>
+                            </View>
+                            <Text style={s.descTxt}>{offer.description || 'Experience unmatched luxury with this exclusive deal from our premium boutique.'}</Text>
+                        </View>
+
+                        {/* Store & Rating Section */}
+                        <View style={s.content}>
+                            <View style={s.sectionHeader}>
+                                <View style={s.goldBar} />
+                                <Text style={s.sectionTitle}>{t('rate_store')}</Text>
+                            </View>
+                            <View style={s.ratingCard}>
+                                <Text style={s.ratingHint}>{t('rating_hint')} {store?.storeName || 'this store'}?</Text>
+                                <RatingStars current={rating} onSelect={setRating} size={32} />
+                                <TextInput 
+                                    placeholder={t('rating_input_hint')} 
+                                    placeholderTextColor="#555" 
+                                    style={s.ratingInput}
+                                    value={comment}
+                                    onChangeText={setComment}
+                                />
+                                <TouchableOpacity style={s.rateBtn} onPress={submitRating} disabled={isSubmitting}>
+                                    {isSubmitting ? (
+                                        <ActivityIndicator color="#000" />
+                                    ) : (
+                                        <Text style={s.rateBtnTxt}>{t('submit_rating')}</Text>
+                                    )}
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {/* Status Cards */}
+                        <View style={s.statusCards}>
+                            <View style={s.statusCard}>
+                                <View style={s.statusIcon}><Ionicons name="checkmark-circle" size={24} color="#D4AF37" /></View>
+                                <View>
+                                    <Text style={s.statusTitle}>{t('verified_deal')}</Text>
+                                    <Text style={s.statusSub}>{t('validated_by')}</Text>
+                                </View>
+                            </View>
+                            <View style={s.statusCard}>
+                                <View style={[s.statusIcon, { backgroundColor: 'rgba(212,175,55,0.1)' }]}><Ionicons name="location" size={24} color="#D4AF37" /></View>
+                                <View>
+                                    <Text style={s.statusTitle}>{t('in_store_offer')}</Text>
+                                    <Text style={s.statusSub}>{store?.location || 'Valoris Central Mall'}</Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-
                 </ScrollView>
 
                 {/* Bottom Buttons */}
@@ -228,48 +237,49 @@ const OfferDetailsScreen = ({ route, navigation }) => {
 };
 
 const s = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, backgroundColor: '#000' },
     gradient: { flex: 1 },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 60, paddingBottom: 20 },
-    backBtn: { width: 44, height: 44, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' },
-    headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 60, paddingBottom: 20, maxWidth: 800, alignSelf: 'center', width: '100%' },
+    backBtn: { width: 44, height: 44, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center' },
+    headerTitle: { color: '#fff', fontSize: 20, fontWeight: '900' },
     shareBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
     scroll: { paddingBottom: 120 },
-    heroWrapper: { marginHorizontal: 24, height: 320, borderRadius: 32, overflow: 'hidden', position: 'relative' },
-    heroImage: { width: '100%', height: '100%' },
+    contentWrapper: { width: '100%' },
+    heroWrapper: { marginHorizontal: 24, height: 360, borderRadius: 32, overflow: 'hidden', position: 'relative', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    heroImage: { width: '100%', height: '100%', resizeMode: 'cover' },
     heroOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
     badgeRow: { position: 'absolute', top: 20, left: 20 },
-    limitedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD700', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
-    limitedTxt: { color: '#000', fontSize: 11, fontWeight: '900' },
+    limitedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#D4AF37', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
+    limitedTxt: { color: '#000', fontSize: 11, fontWeight: '950' },
     heroContent: { position: 'absolute', bottom: 30, left: 25, right: 25 },
-    discountTitle: { color: '#fff', fontSize: 28, fontWeight: '900', lineHeight: 36 },
-    storeSub: { color: '#D4AF37', fontSize: 16, fontWeight: '700', marginTop: 8 },
+    discountTitle: { color: '#fff', fontSize: 32, fontWeight: '950', lineHeight: 40 },
+    storeSub: { color: '#D4AF37', fontSize: 18, fontWeight: '700', marginTop: 10 },
     statsRow: { flexDirection: 'row', gap: 15, paddingHorizontal: 24, marginTop: 24 },
-    statCard: { flex: 1, minHeight: 80, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(212,175,55,0.1)', paddingVertical: 10 },
-    statLabel: { color: '#D4AF37', fontSize: 10, fontWeight: '800', marginBottom: 8 },
-    statValue: { color: '#fff', fontSize: 22, fontWeight: '900' },
+    statCard: { flex: 1, minHeight: 90, backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(212,175,55,0.15)', paddingVertical: 10 },
+    statLabel: { color: '#D4AF37', fontSize: 11, fontWeight: '850', marginBottom: 8, letterSpacing: 1 },
+    statValue: { color: '#fff', fontSize: 24, fontWeight: '950' },
     miniRate: { flexDirection: 'row', alignItems: 'center' },
     content: { paddingHorizontal: 24, marginTop: 32 },
-    sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 15 },
-    goldBar: { width: 4, height: 24, backgroundColor: '#D4AF37', borderRadius: 2 },
-    sectionTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
-    descTxt: { color: '#8E8E93', fontSize: 15, lineHeight: 24 },
-    ratingCard: { backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 24, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', alignItems: 'center' },
-    ratingHint: { color: '#fff', fontSize: 14, fontWeight: '600', marginBottom: 15, textAlign: 'center' },
-    starsRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
-    ratingInput: { width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 15, padding: 12, color: '#fff', fontSize: 14, minHeight: 60, textAlignVertical: 'top' },
-    rateBtn: { width: '100%', backgroundColor: '#D4AF37', borderRadius: 15, paddingVertical: 12, alignItems: 'center', marginTop: 15 },
-    rateBtnTxt: { color: '#000', fontWeight: '800', fontSize: 15 },
-    statusCards: { paddingHorizontal: 24, marginTop: 24, gap: 12 },
-    statusCard: { flexDirection: 'row', alignItems: 'center', gap: 15, backgroundColor: 'rgba(255,255,255,0.03)', padding: 18, borderRadius: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
-    statusIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(212,175,55,0.1)', alignItems: 'center', justifyContent: 'center' },
-    statusTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
-    statusSub: { color: '#8E8E93', fontSize: 13, marginTop: 2 },
-    bottomRow: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', gap: 15, paddingHorizontal: 24, paddingBottom: 40, paddingTop: 20, backgroundColor: 'rgba(26,21,13,0.98)' },
-    favBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 60, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-    favTxt: { color: '#fff', fontWeight: '800', fontSize: 15 },
-    navBtn: { flex: 1.2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 60, borderRadius: 20, backgroundColor: '#FFD700' },
-    navTxt: { color: '#000', fontWeight: '800', fontSize: 15 },
+    sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
+    goldBar: { width: 4, height: 26, backgroundColor: '#D4AF37', borderRadius: 2 },
+    sectionTitle: { color: '#fff', fontSize: 22, fontWeight: '900' },
+    descTxt: { color: '#A0A0B0', fontSize: 16, lineHeight: 26, fontWeight: '400' },
+    ratingCard: { backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 28, padding: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center' },
+    ratingHint: { color: '#fff', fontSize: 15, fontWeight: '600', marginBottom: 20, textAlign: 'center' },
+    starsRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+    ratingInput: { width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 18, padding: 16, color: '#fff', fontSize: 15, minHeight: 80, textAlignVertical: 'top', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    rateBtn: { width: '100%', backgroundColor: '#D4AF37', borderRadius: 18, paddingVertical: 14, alignItems: 'center', marginTop: 20 },
+    rateBtnTxt: { color: '#000', fontWeight: '900', fontSize: 16 },
+    statusCards: { paddingHorizontal: 24, marginTop: 32, gap: 12 },
+    statusCard: { flexDirection: 'row', alignItems: 'center', gap: 18, backgroundColor: 'rgba(255,255,255,0.04)', padding: 20, borderRadius: 28, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+    statusIcon: { width: 52, height: 52, borderRadius: 16, backgroundColor: 'rgba(212,175,55,0.1)', alignItems: 'center', justifyContent: 'center' },
+    statusTitle: { color: '#fff', fontSize: 17, fontWeight: '800' },
+    statusSub: { color: '#8E8E93', fontSize: 14, marginTop: 4 },
+    bottomRow: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', gap: 15, paddingHorizontal: 24, paddingBottom: 40, paddingTop: 20, backgroundColor: 'rgba(0,0,0,0.9)', maxWidth: 800, alignSelf: 'center', width: '100%' },
+    favBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, height: 60, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
+    favTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+    navBtn: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, height: 60, borderRadius: 22, backgroundColor: '#D4AF37' },
+    navTxt: { color: '#000', fontWeight: '950', fontSize: 16 },
     errorText: { color: '#fff', textAlign: 'center', marginTop: 100 },
 });
 

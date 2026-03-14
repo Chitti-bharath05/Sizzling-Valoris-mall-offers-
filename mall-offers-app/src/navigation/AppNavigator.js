@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { NavigationHistoryProvider } from '../context/NavigationHistoryContext';
 
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -161,9 +162,11 @@ const AppNavigator = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator screenOptions={screenOptions} key={user ? 'app-root' : 'auth-root'}>
-                {getMainScreens()}
-            </Stack.Navigator>
+            <NavigationHistoryProvider>
+                <Stack.Navigator screenOptions={screenOptions} key={user ? 'app-root' : 'auth-root'}>
+                    {getMainScreens()}
+                </Stack.Navigator>
+            </NavigationHistoryProvider>
         </NavigationContainer>
     );
 };

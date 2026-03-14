@@ -7,14 +7,15 @@ import {
     StyleSheet,
     Dimensions,
     Image,
-    TextInput,
-    ActivityIndicator
+    ActivityIndicator,
+    useWindowDimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import NavigationControls from '../components/NavigationControls';
 
 const { width } = Dimensions.get('window');
 
@@ -45,6 +46,13 @@ export default function OffersScreen({ route, navigation }) {
 
     const activeOffers = getActiveOffers() || [];
 
+    const { width } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
+    
+    // Calculate columns based on width
+    const numColumns = width > 1200 ? 4 : width > 800 ? 3 : width > 600 ? 2 : 1;
+    const cardWidth = (width - 48 - (numColumns - 1) * 16) / numColumns;
+
     const filteredOffers = useMemo(() => {
         let filtered = activeOffers;
         if (selectedCategory !== 'All') {
@@ -66,21 +74,36 @@ export default function OffersScreen({ route, navigation }) {
 
         return (
             <TouchableOpacity 
-                style={s.card} 
+                style={[s.card, { width: cardWidth }]} 
                 onPress={() => navigation.navigate('OfferDetails', { offerId: item._id || item.id })}
             >
-                <Image source={{ uri: item.image }} style={s.cardImg} />
+                <View style={s.cardImgWrapper}>
+                    <Image source={{ uri: item.image }} style={s.cardImg} resizeMode="cover" />
+                    <LinearGradient 
+                        colors={['transparent', 'rgba(0,0,0,0.8)']} 
+                        style={s.cardImgOverlay} 
+                    />
+                    <View style={s.discountBadge}>
+                        <Text style={s.discountBadgeTxt}>{item.discount}% OFF</Text>
+                    </View>
+                </View>
                 <View style={s.cardInfo}>
                     <View style={s.cardHeader}>
                         <Text style={s.cardTitle} numberOfLines={1}>{item.title}</Text>
                         <TouchableOpacity onPress={(e) => { e.stopPropagation(); toggleFavorite(item._id || item.id); }}>
-                            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={22} color="#D4AF37" />
+                            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color="#D4AF37" />
                         </TouchableOpacity>
                     </View>
-                    <Text style={s.cardStore}>{item.storeId?.storeName || 'Sizzling Valoris Central'}</Text>
+                    <Text style={s.cardStore} numberOfLines={1}>{item.storeId?.storeName || 'Boutique'}</Text>
                     <View style={s.cardFooter}>
-                        <Text style={s.cardPrice}>₹{(item.originalPrice * (1 - item.discount / 100)).toLocaleString()}</Text>
-                        <Text style={s.cardExp}>{t('expires_in_days').replace('{days}', daysLeft)}</Text>
+                        <View>
+                            <Text style={s.cardPrice}>₹{(item.originalPrice * (1 - item.discount / 100)).toLocaleString()}</Text>
+                            <Text style={s.oldPrice}>₹{item.originalPrice.toLocaleString()}</Text>
+                        </View>
+                        <View style={s.expBadge}>
+                            <Ionicons name="time-outline" size={12} color="#8E8E93" />
+                            <Text style={s.cardExp}>{daysLeft}d</Text>
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -100,7 +123,10 @@ export default function OffersScreen({ route, navigation }) {
         <View style={s.container}>
             <LinearGradient colors={['#1a150d', '#000']} style={s.gradient}>
                 <View style={s.header}>
-                    <Text style={s.headerTitle}>{t('exclusive_offers')}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+                        <Text style={s.headerTitle}>{t('exclusive_offers')}</Text>
+                        <NavigationControls />
+                    </View>
                     <TouchableOpacity onPress={() => navigation.navigate('Favorites')}>
                         <Ionicons name="heart-outline" size={26} color="#fff" />
                     </TouchableOpacity>
@@ -142,10 +168,13 @@ export default function OffersScreen({ route, navigation }) {
                 </View>
 
                 <FlatList
+                    key={`grid-${numColumns}`}
                     data={filteredOffers}
                     renderItem={renderOfferCard}
+                    numColumns={numColumns}
                     keyExtractor={item => item._id || item.id}
-                    contentContainerStyle={s.list}
+                    contentContainerStyle={[s.list, isWeb && { maxWidth: 1200, alignSelf: 'center' }]}
+                    columnWrapperStyle={numColumns > 1 ? s.columnWrapper : null}
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={
                         <View style={s.empty}>
@@ -163,26 +192,33 @@ const s = StyleSheet.create({
     container: { flex: 1 },
     gradient: { flex: 1 },
     loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, paddingTop: 60, paddingBottom: 20 },
-    headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800' },
-    searchWrap: { paddingHorizontal: 24, marginBottom: 15 },
-    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 20, paddingHorizontal: 16, height: 56, borderWidth: 1, borderColor: 'rgba(212,175,55,0.2)' },
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, paddingTop: 60, paddingBottom: 20, maxWidth: 1200, alignSelf: 'center', width: '100%' },
+    headerTitle: { color: '#fff', fontSize: 24, fontWeight: '900' },
+    searchWrap: { paddingHorizontal: 24, marginBottom: 15, maxWidth: 1200, alignSelf: 'center', width: '100%' },
+    searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, paddingHorizontal: 16, height: 50, borderWidth: 1, borderColor: 'rgba(212,175,55,0.1)' },
     searchInput: { flex: 1, color: '#fff', fontSize: 16 },
-    catList: { paddingHorizontal: 24, paddingBottom: 15 },
-    catPill: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.05)', marginRight: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
+    catList: { paddingHorizontal: 24, paddingBottom: 15, maxWidth: 1200, alignSelf: 'center' },
+    catPill: { paddingHorizontal: 18, paddingVertical: 8, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.05)', marginRight: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
     catPillActive: { backgroundColor: '#D4AF37', borderColor: '#D4AF37' },
-    catText: { color: '#8E8E93', fontSize: 14, fontWeight: '700' },
+    catText: { color: '#8E8E93', fontSize: 13, fontWeight: '700' },
     catTextActive: { color: '#000' },
-    list: { paddingHorizontal: 24, paddingBottom: 100 },
-    card: { backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 24, marginBottom: 16, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
-    cardImg: { width: '100%', height: 180 },
-    cardInfo: { padding: 16 },
+    list: { paddingHorizontal: 24, paddingBottom: 100, width: '100%' },
+    columnWrapper: { justifyContent: 'flex-start', gap: 16 },
+    card: { backgroundColor: '#121212', borderRadius: 20, marginBottom: 16, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+    cardImgWrapper: { width: '100%', height: 200, position: 'relative' },
+    cardImg: { width: '100%', height: '100%' },
+    cardImgOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%' },
+    discountBadge: { position: 'absolute', top: 12, left: 12, backgroundColor: '#D4AF37', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+    discountBadgeTxt: { color: '#000', fontSize: 10, fontWeight: '900' },
+    cardInfo: { padding: 12 },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    cardTitle: { color: '#fff', fontSize: 18, fontWeight: '800', flex: 1, marginRight: 10 },
-    cardStore: { color: '#D4AF37', fontSize: 14, marginTop: 4, fontWeight: '600' },
-    cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
-    cardPrice: { color: '#fff', fontSize: 18, fontWeight: '800' },
-    cardExp: { color: '#8E8E93', fontSize: 12, fontWeight: '500' },
+    cardTitle: { color: '#fff', fontSize: 16, fontWeight: 'Bold', flex: 1, marginRight: 8 },
+    cardStore: { color: '#8E8E93', fontSize: 12, marginTop: 2, fontWeight: '500' },
+    cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 12 },
+    cardPrice: { color: '#fff', fontSize: 18, fontWeight: '900' },
+    oldPrice: { color: '#555', fontSize: 11, textDecorationLine: 'line-through', marginTop: 2 },
+    expBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+    cardExp: { color: '#8E8E93', fontSize: 10, fontWeight: '700' },
     empty: { alignItems: 'center', marginTop: 100 },
     emptyTxt: { color: '#555', fontSize: 18, fontWeight: '700', marginTop: 15 },
 });
