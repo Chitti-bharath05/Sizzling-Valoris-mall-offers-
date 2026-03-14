@@ -38,11 +38,15 @@ const LoginScreen = ({ navigation }) => {
 
     const redirectUri = makeRedirectUri({
         scheme: 'com.credora.malloffersapp',
-        useProxy: Platform.OS !== 'web',
-        preferLocalhost: true
+        useProxy: Platform.OS !== 'web'
     });
+    
 
+
+    // Use the Web Client ID for ALL platforms when using the Expo Proxy (Expo Go)
+    // Use Native Client IDs ONLY for standalone builds (APK)
     const [request, response, promptAsync] = Google.useAuthRequest({
+        clientId: '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com', // Web Client ID (Works for Proxy)
         androidClientId: '1014294657035-bpt2uqh58jbfgc8r7pn4kjorjum36b1a.apps.googleusercontent.com',
         iosClientId: '1014294657035-2util2uuslfmiqq5o4dmgkctf3biv67t.apps.googleusercontent.com',
         webClientId: '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com',
@@ -230,16 +234,13 @@ const LoginScreen = ({ navigation }) => {
                                 <TouchableOpacity 
                                     style={[s.socialBtn, { backgroundColor: '#4285F4', elevation: 10, zIndex: 100 }]} 
                                     onPress={async () => {
-                                        console.log('[DEBUG] Google Press Triggered');
-                                        if (Platform.OS !== 'web') Alert.alert('Debug', 'Google Button Clicked');
-                                        
                                         if (request) {
                                             promptAsync().catch(err => {
-                                                console.error('[DEBUG] Prompt Error:', err);
-                                                Alert.alert('Prompt Failed', err.message);
+                                                console.error('Google Auth Error:', err);
+                                                Alert.alert('Login Error', 'Failed to start Google Sign-In');
                                             });
                                         } else {
-                                            Alert.alert('Wait', 'Google configuration is still loading...');
+                                            Alert.alert('Configuration Error', 'Google Login not configured properly');
                                         }
                                     }}
                                 >
