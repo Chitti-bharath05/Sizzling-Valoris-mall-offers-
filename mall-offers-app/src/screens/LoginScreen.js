@@ -36,17 +36,20 @@ const LoginScreen = ({ navigation }) => {
     const { login, socialLogin } = useAuth();
     const { t } = useLanguage();
 
+    const isExpoGo = Constants.appOwnership === 'expo';
+    
     const redirectUri = makeRedirectUri({
         scheme: 'com.credora.malloffersapp',
-        useProxy: Platform.OS !== 'web'
+        useProxy: isExpoGo // Proxy only for Expo Go
     });
-    
 
-
-    // Use the Web Client ID for ALL platforms when using the Expo Proxy (Expo Go)
-    // Use Native Client IDs ONLY for standalone builds (APK)
+    // Strategy:
+    // - In Expo Go: Use the Web Client ID (Proxy works like a website)
+    // - In Standalone APK: Use Native Client IDs
     const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com', // Web Client ID (Works for Proxy)
+        clientId: isExpoGo 
+            ? '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com' 
+            : undefined,
         androidClientId: '1014294657035-bpt2uqh58jbfgc8r7pn4kjorjum36b1a.apps.googleusercontent.com',
         iosClientId: '1014294657035-2util2uuslfmiqq5o4dmgkctf3biv67t.apps.googleusercontent.com',
         webClientId: '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com',
