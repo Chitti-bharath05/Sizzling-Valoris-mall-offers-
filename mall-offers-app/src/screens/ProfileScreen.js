@@ -6,7 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../context/AuthContext';
 
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 const ProfileScreen = ({ navigation }) => {
     const { user, logout, updateProfileImage } = useAuth();

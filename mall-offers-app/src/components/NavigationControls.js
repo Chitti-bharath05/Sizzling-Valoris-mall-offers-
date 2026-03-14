@@ -9,7 +9,6 @@ const NavigationControls = () => {
     const route = useRoute();
     const isWeb = Platform.OS === 'web';
 
-    // Logic: Only show on specific "Leaf" screens or if we are deep in a stack
     const currentRouteName = route.name;
 
     // Screens where we EXPLICITLY allow these controls
