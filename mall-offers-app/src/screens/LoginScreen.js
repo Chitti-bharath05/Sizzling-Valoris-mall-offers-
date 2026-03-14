@@ -41,10 +41,10 @@ const LoginScreen = ({ navigation }) => {
     const isStandalone = !isExpoGo && Platform.OS !== 'web';
     
     // EXTREMELY IMPORTANT:
-    // - Expo Go: useProxy=true (AuthSession Proxy handles it)
-    // - Standalone APK: useProxy=false (Uses custom scheme com.credora.malloffersapp://)
-    // - Web: useProxy=false (Standard browser redirect)
-    const useProxy = isExpoGo && Platform.OS !== 'web';
+    // We set useProxy: true to use the "auth.expo.io" proxy.
+    // This gives us an HTTPS link (https://auth.expo.io/...) 
+    // which is required for Google Cloud Console to accept it.
+    const useProxy = Platform.OS !== 'web';
 
     const redirectUri = makeRedirectUri({
         scheme: 'com.credora.malloffersapp',
