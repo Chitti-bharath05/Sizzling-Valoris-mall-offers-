@@ -37,30 +37,12 @@ const LoginScreen = ({ navigation }) => {
     const { login, socialLogin } = useAuth();
     const { t } = useLanguage();
 
-    const isExpoGo = Constants.appOwnership === 'expo';
-    const isStandalone = !isExpoGo && Platform.OS !== 'web';
-    
-    // EXTREMELY IMPORTANT:
-    // We set useProxy: true to use the "auth.expo.io" proxy.
-    // This gives us an HTTPS link (https://auth.expo.io/...) 
-    // which is required for Google Cloud Console to accept it.
-    const useProxy = Platform.OS !== 'web';
-
-    const redirectUri = makeRedirectUri({
-        scheme: 'com.credora.malloffersapp',
-        path: 'oauthredirect',
-        useProxy
-    });
-
     const [request, response, promptAsync] = Google.useAuthRequest({
-        // For Standalone APK & Web & Expo Go: We use the Web Client ID as the main 'clientId'.
-        // This is the most reliable way to use custom scheme redirects (com.credora.malloffersapp://)
-        // in a browser-based OAuth flow.
-        clientId: '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com',
-        androidClientId: '1014294657035-bpt2uqh58jbfgc8r7pn4kjorjum36b1a.apps.googleusercontent.com',
-        iosClientId: '1014294657035-2util2uuslfmiqq5o4dmgkctf3biv67t.apps.googleusercontent.com',
-        webClientId: '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com',
-        redirectUri
+        androidClientId: "1014294657035-bpt2uqh58jbfgc8r7pn4kjorjum36b1a.apps.googleusercontent.com",
+        webClientId: "1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com",
+        redirectUri: makeRedirectUri({
+            useProxy: true,
+        }),
     });
 
     // Logging to help debug production APK issues
