@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 const AdminDashboardScreen = () => {
     const { user, users, deleteUser, logout, fetchUsers, isLoading: authLoading } = useAuth();

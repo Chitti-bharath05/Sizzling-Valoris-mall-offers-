@@ -128,7 +128,6 @@ export default function OffersScreen({ route, navigation }) {
                 <View style={s.header}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
                         <Text style={s.headerTitle}>{t('exclusive_offers')}</Text>
-                        <NavigationControls />
                     </View>
                     <TouchableOpacity onPress={() => navigation.navigate('Favorites')}>
                         <Ionicons name="heart-outline" size={26} color="#fff" />

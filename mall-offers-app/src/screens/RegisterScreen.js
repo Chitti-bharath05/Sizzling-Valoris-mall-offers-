@@ -17,7 +17,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');

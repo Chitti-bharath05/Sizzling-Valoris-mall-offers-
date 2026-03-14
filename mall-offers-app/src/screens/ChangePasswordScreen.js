@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../services/apiClient';
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 export default function ChangePasswordScreen({ navigation }) {
     const { t } = useLanguage();

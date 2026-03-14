@@ -6,7 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 const StoreOwnerDashboardScreen = () => {
     const { user, logout } = useAuth();

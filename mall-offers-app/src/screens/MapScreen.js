@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
-import NavigationControls from '../components/NavigationControls';
 
 export default function MapScreen({ navigation }) {
     const { t } = useLanguage();

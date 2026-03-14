@@ -6,7 +6,6 @@ import { AuthProvider } from './src/context/AuthContext';
 import { DataProvider } from './src/context/DataContext';
 import { LanguageProvider } from './src/context/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
-import { NavigationHistoryProvider } from './src/context/NavigationHistoryContext';
 import ErrorBoundary from './ErrorBoundary';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';

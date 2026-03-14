@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../services/apiClient';
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 export default function ProfileInfoScreen({ navigation }) {
     const { user, updateProfile } = useAuth();

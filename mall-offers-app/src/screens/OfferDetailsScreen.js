@@ -23,7 +23,6 @@ import apiClient from '../services/apiClient';
 const { width } = Dimensions.get('window');
 
 import { useLanguage } from '../context/LanguageContext';
-import NavigationControls from '../components/NavigationControls';
 
 const OfferDetailsScreen = ({ route, navigation }) => {
     const { offerId } = route.params;
@@ -142,7 +141,6 @@ const OfferDetailsScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                         <Text style={s.headerTitle}>{t('deal_details')}</Text>
-                        <NavigationControls />
                     </View>
                     <TouchableOpacity style={s.shareBtn}>
                         <Ionicons name="share-social" size={22} color="#FFFFFF" />

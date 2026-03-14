@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../services/apiClient';
-import NavigationControls from '../components/NavigationControls';
 
 const SettingItem = ({ icon, label, right, onPress }) => (
     <TouchableOpacity 
