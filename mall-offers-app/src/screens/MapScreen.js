@@ -11,10 +11,10 @@ export default function MapScreen({ navigation }) {
     const { stores } = useData();
     const [search, setSearch] = useState('');
 
-    const approvedStores = stores.filter(s => s.approved);
+    const approvedStores = (stores || []).filter(s => s?.approved);
     const filteredStores = approvedStores.filter(s => 
-        s.storeName.toLowerCase().includes(search.toLowerCase()) ||
-        s.area.toLowerCase().includes(search.toLowerCase())
+        s?.storeName?.toLowerCase().includes(search.toLowerCase()) ||
+        s?.area?.toLowerCase().includes(search.toLowerCase())
     );
 
     const navigateToStore = async (store) => {

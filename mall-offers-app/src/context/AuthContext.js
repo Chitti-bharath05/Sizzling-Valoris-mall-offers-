@@ -102,6 +102,7 @@ export const AuthProvider = ({ children }) => {
             if (response.success) {
                 setUser(response.user);
                 await AsyncStorage.setItem('userInfo', JSON.stringify(response.user));
+                if (response.user.role === 'admin') fetchUsers();
                 setupPushNotifications();
                 return { success: true, user: response.user };
             }
@@ -140,6 +141,7 @@ export const AuthProvider = ({ children }) => {
             if (response.success) {
                 setUser(response.user);
                 await AsyncStorage.setItem('userInfo', JSON.stringify(response.user));
+                if (response.user.role === 'admin') fetchUsers();
                 setupPushNotifications();
                 return { success: true, user: response.user };
             }

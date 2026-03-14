@@ -119,7 +119,6 @@ const StoreOwnerDashboardScreen = () => {
                                 <Text style={s.headerTitle}>{t('store_dash')}</Text>
                                 <Text style={s.headerSub}>{t('manage_stores_offers')}</Text>
                             </View>
-                            <NavigationControls />
                         </View>
                         <TouchableOpacity style={s.headerLogout} onPress={() => {
                             if (Platform.OS === 'web') {

@@ -2,10 +2,25 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavHistory } from '../context/NavigationHistoryContext';
+import { useNavigationState } from '@react-navigation/native';
 
 const NavigationControls = () => {
     const { canGoBack, canGoForward, goBack, goForward } = useNavHistory();
     const isWeb = Platform.OS === 'web';
+
+    // Logic: Only show on specific "Leaf" screens or if we are deep in a stack
+    const currentRouteName = useNavigationState(state => {
+        if (!state) return null;
+        const route = state.routes[state.index];
+        // Handle nested navigators
+        if (route.state) return route.state.routes[route.state.index].name;
+        return route.name;
+    });
+
+    const allowedScreens = ['OfferDetails', 'ProfileInfo', 'ChangePassword', 'Legal', 'HelpSupport', 'Deals'];
+    const isVisible = allowedScreens.includes(currentRouteName);
+
+    if (!isVisible) return null;
 
     return (
         <View style={styles.container}>

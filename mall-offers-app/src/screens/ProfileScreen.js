@@ -53,7 +53,6 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={s.header}>
                     <View style={s.headerLeft}>
                         <Text style={s.headerTitle}>{t('profile')}</Text>
-                        <NavigationControls />
                     </View>
                     <TouchableOpacity style={s.headerBtn} onPress={() => navigation.navigate('Settings')}>
                         <Ionicons name="settings-sharp" size={22} color="#fff" />

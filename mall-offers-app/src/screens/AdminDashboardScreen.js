@@ -8,7 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import NavigationControls from '../components/NavigationControls';
 
 const AdminDashboardScreen = () => {
-    const { user, users, deleteUser, logout, isLoading: authLoading } = useAuth();
+    const { user, users, deleteUser, logout, fetchUsers, isLoading: authLoading } = useAuth();
     const { stores, offers, getPendingStores, approveStore, rejectStore, deleteOffer, getAdminStats, isLoading: dataLoading } = useData();
     const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState('approvals');
@@ -18,7 +18,8 @@ const AdminDashboardScreen = () => {
         if (getAdminStats) {
             getAdminStats().then(setAdminStats).catch(console.error);
         }
-    }, [getAdminStats]);
+        if (fetchUsers) fetchUsers();
+    }, [getAdminStats, fetchUsers]);
 
     const isLoading = authLoading || dataLoading;
 
@@ -84,7 +85,6 @@ const AdminDashboardScreen = () => {
                                 <Text style={s.headerTitle}>{t('admin_panel')}</Text>
                                 <Text style={s.headerSub}>{t('manage_platform')}</Text>
                             </View>
-                            <NavigationControls />
                         </View>
                         <TouchableOpacity
                             style={s.headerLogout}

@@ -4,9 +4,6 @@
     "slug": "mall-offers-app",
     "scheme": "com.credora.malloffersapp",
     "version": "1.0.0",
-    "cli": {
-      "appVersionSource": "remote"
-    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -38,6 +35,10 @@
       "eas": {
         "projectId": "70fbdac7-3871-4ce7-b61e-529ff571cb74"
       }
-    }
+    },
+    "plugins": [
+      "expo-apple-authentication",
+      "expo-notifications"
+    ]
   }
 }
