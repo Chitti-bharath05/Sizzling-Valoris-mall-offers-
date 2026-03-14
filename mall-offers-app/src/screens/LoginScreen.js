@@ -39,17 +39,20 @@ const LoginScreen = ({ navigation }) => {
 
     const isExpoGo = Constants.appOwnership === 'expo';
     
+    // Improved Redirect URI logic
     const redirectUri = makeRedirectUri({
         scheme: 'com.credora.malloffersapp',
         path: 'oauthredirect',
-        useProxy: isExpoGo // Proxy only for Expo Go
+        // useProxy: true is REQUIRED for Google Auth in Expo Go (Mobile)
+        // useProxy: false is REQUIRED for Standalone builds and Web
+        useProxy: isExpoGo && Platform.OS !== 'web' 
     });
 
-    // Strategy:
-    // - In Expo Go: Use the Web Client ID (Proxy works like a website)
-    // - In Standalone APK: Use Native Client IDs
     const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: isExpoGo 
+        // For Expo Go: Use the Web Client ID (Auth Session Proxy handles it)
+        // For Standalone: Expo uses the native Android/iOS Client IDs
+        // For Web: Use the Web Client ID directly
+        clientId: (isExpoGo || Platform.OS === 'web')
             ? '1014294657035-l76t57bls0gj12a1kcti54g4t52sll2e.apps.googleusercontent.com' 
             : undefined,
         androidClientId: '1014294657035-bpt2uqh58jbfgc8r7pn4kjorjum36b1a.apps.googleusercontent.com',
